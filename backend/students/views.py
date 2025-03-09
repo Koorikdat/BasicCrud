@@ -1,9 +1,9 @@
-from django.http.response import Http404
 from rest_framework.views import APIView
-from rest_framework.response import Response
+from .serializers import StudentSerializer
 from django.http.response import JsonResponse
 from .models import Student
-from .serializers import StudentSerializer
+from django.http.response import Http404
+from rest_framework.response import Response
 
 
 class StudentView(APIView):
@@ -12,8 +12,8 @@ class StudentView(APIView):
         try:
             student = Student.objects.get(studentId=pk)
             return student
-        except Student.DoesNotExist:
-            raise Http404
+        except:
+            return JsonResponse("Student Does Not Exist", safe=False)
 
     def get(self, request, pk=None):
         if pk:
@@ -30,7 +30,7 @@ class StudentView(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse("Student Added Successfully", safe=False)
+            return JsonResponse("Student Created Successfully", safe=False)
         return JsonResponse("Failed to Add Student", safe=False)
 
     def put(self, request, pk=None):
@@ -39,10 +39,15 @@ class StudentView(APIView):
 
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse("Student updated Successfully", safe=False)
-        return JsonResponse("Failed To Update Student")
+            return JsonResponse("Student Updated Successfully", safe=False)
+        return JsonResponse("Failed to Update Student")
 
-    def delete(self, request, pk):
+    def delete(self, request, pk=None):
         student_to_delete = Student.objects.get(studentId=pk)
         student_to_delete.delete()
         return JsonResponse("Student Deleted Successfully", safe=False)
+
+
+
+
+
